@@ -1,5 +1,16 @@
 # until
 
-A dicord bot that kicks you out of voicechat after x minutes
+A discord bot that kicks you out of voicechat after x minutes
 
-TODO instructions to run
+## Setup
+Create `data/settings/settings.json` containing:
+```json
+{
+  "token" : "Your Auth Token",
+  "prefix" : "!",
+  "bot-name" : "until",
+  "extension-folders" : [
+    "src/discord/extensions"
+  ]
+}
+```

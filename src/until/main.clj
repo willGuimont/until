@@ -3,6 +3,6 @@
   (:gen-class))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Starts a Discord bot."
   [& args]
-  (println "Hello, World!"))
+  (bot/start))
