@@ -3,7 +3,14 @@
 A discord bot that kicks you out of voicechat after x minutes
 
 ## Setup
-Create `data/token.txt` containing:
+Create `data/settings/settings.json` containing:
 ```json
-<Your-Auth-Token>
+{
+  "token" : "Your Auth Token",
+  "prefix" : "!",
+  "bot-name" : "until",
+  "extension-folders" : [
+    "src/discord/extensions"
+  ]
+}
 ```
