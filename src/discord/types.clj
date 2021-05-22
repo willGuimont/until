@@ -41,42 +41,42 @@
 ;;; Several built-in types can be used as snowflakes
 (extend-protocol Snowflake
   Integer
-    (->snowflake [i] i)
+  (->snowflake [i] i)
   Long
-    (->snowflake [l] l)
+  (->snowflake [l] l)
   String
-    (->snowflake [s] s))
+  (->snowflake [s] s))
 
 ;;; Mapping the returns from the Discord API enumerated types into Clojure keywords
 (defonce channel-type
-  [:text :private :voice :group])
+         [:text :private :voice :group])
 
 (defonce verification-level
-  [:none :low :medium :high :table-flip])
+         [:none :low :medium :high :table-flip])
 
 (defonce server-region
-  {"us-west"       :us-west
-   "us-east"       :us-east
-   "us-south"      :us-south
-   "us-central"    :us-central
-   "eu-west"       :eu-west
-   "eu-central"    :eu-central
-   "singapore"     :singapore
-   "london"        :london
-   "sydney"        :sydney
-   "amsterdam"     :amsterdam
-   "frankfurt"     :frankfurt
-   "brazil"        :brazil
-   "vip-us-east"   :vip-us-east
-   "vip-us-west"   :vip-us-west
-   "vip-amsterdam" :vip-amsterdam})
+         {"us-west"       :us-west
+          "us-east"       :us-east
+          "us-south"      :us-south
+          "us-central"    :us-central
+          "eu-west"       :eu-west
+          "eu-central"    :eu-central
+          "singapore"     :singapore
+          "london"        :london
+          "sydney"        :sydney
+          "amsterdam"     :amsterdam
+          "frankfurt"     :frankfurt
+          "brazil"        :brazil
+          "vip-us-east"   :vip-us-east
+          "vip-us-west"   :vip-us-west
+          "vip-amsterdam" :vip-amsterdam})
 
 (defonce status
-  {"online"         :online
-   "offline"        :offline
-   "idle"           :idle
-   "do_not_disturb" :dnd
-   "invisible"      :invisible})
+         {"online"         :online
+          "offline"        :offline
+          "idle"           :idle
+          "do_not_disturb" :dnd
+          "invisible"      :invisible})
 
 (defonce default-avatar
-  [:blurple :gray :green :orange :red])
+         [:blurple :gray :green :orange :red])

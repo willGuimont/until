@@ -20,7 +20,7 @@
                   provider author fields])
 
 (defn- get-iso-timestamp []
-  (let [iso-formatter   (f/formatters :date-hour-minute-second-ms)]
+  (let [iso-formatter (f/formatters :date-hour-minute-second-ms)]
     (->> (System/currentTimeMillis)
          (c/from-long)
          (f/unparse iso-formatter))))
@@ -31,12 +31,12 @@
   [& {:keys [title description url color] :as embed-options}]
   (let [timestamp (get-iso-timestamp)]
     (map->Embed
-      {:title        title
-       :type         "rich"
-       :description  description
-       :url          url
-       :color        color
-       :timestamp    timestamp})))
+      {:title       title
+       :type        "rich"
+       :description description
+       :url         url
+       :color       color
+       :timestamp   timestamp})))
 
 (defn +footer
   "Sets the footer in the supplied message embed."
@@ -88,13 +88,13 @@
   "Converts the Embed record into a map with no nil valued fields."
   [embed]
   (as-> embed embed
-    (if (:image embed)      (assoc embed :image (prune-into-map (:image embed)))          embed)
-    (if (:author embed)     (assoc embed :author (prune-into-map (:author embed)))        embed)
-    (if (:video embed)      (assoc embed :video (prune-into-map (:video embed)))          embed)
-    (if (:provider embed)   (assoc embed :provider (prune-into-map (:provider embed)))    embed)
-    (if (:thumbnail embed)  (assoc embed :thumbnail (prune-into-map (:thumbnail embed)))  embed)
-    (if (:fields embed)     (assoc embed :fields (map prune-into-map (:fields embed)))    embed)
-    (prune-into-map embed)))
+        (if (:image embed) (assoc embed :image (prune-into-map (:image embed))) embed)
+        (if (:author embed) (assoc embed :author (prune-into-map (:author embed))) embed)
+        (if (:video embed) (assoc embed :video (prune-into-map (:video embed))) embed)
+        (if (:provider embed) (assoc embed :provider (prune-into-map (:provider embed))) embed)
+        (if (:thumbnail embed) (assoc embed :thumbnail (prune-into-map (:thumbnail embed))) embed)
+        (if (:fields embed) (assoc embed :fields (map prune-into-map (:fields embed))) embed)
+        (prune-into-map embed)))
 
 (defn embed?
   "Returns whether or not 'maybe-embed' is an Embed record."

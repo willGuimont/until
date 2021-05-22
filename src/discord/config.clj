@@ -7,15 +7,15 @@
 
 ;;; Saving, loading, and checking config files
 (defmulti file-io
-  "Manages the saving and loading of file-io files.
+          "Manages the saving and loading of file-io files.
 
-   Optional arguments per operation:
-    - :save
-      - data: The data that you wish to save to the file.
-   - :load
-      - :default: The value to be returned if data could not be loaded."
-  (fn [filename operation & {:keys [data default]}]
-    operation))
+           Optional arguments per operation:
+            - :save
+              - data: The data that you wish to save to the file.
+           - :load
+              - :default: The value to be returned if data could not be loaded."
+          (fn [filename operation & {:keys [data default]}]
+            operation))
 
 (defmethod file-io :save [filename _ & {:keys [data]}]
   (spit filename (json/write-str data)))

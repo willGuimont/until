@@ -44,38 +44,38 @@
   (let [user-id (-> user-map :user :id)
         mention (str \@ user-id)]
     (map->User
-    {:id            user-id
-     :mention       mention
-     :nick          (:nick user-map)
-     :deaf          (:deaf user-map)
-     :mute          (:mute user-map)
-     :roles         (:roles user-map)
-     :joined        (:joined_at user-map)
-     :bot?          (-> user-map :user :bot)
-     :mfa-enabled?  (-> user-map :user :mfa_enabled)
-     :verified?     (-> user-map :user :verified)
-     :username      (-> user-map :user :username)
-     :avatar        (-> user-map :user :avatar)
-     :discriminator (-> user-map :user :discriminator)})))
+      {:id            user-id
+       :mention       mention
+       :nick          (:nick user-map)
+       :deaf          (:deaf user-map)
+       :mute          (:mute user-map)
+       :roles         (:roles user-map)
+       :joined        (:joined_at user-map)
+       :bot?          (-> user-map :user :bot)
+       :mfa-enabled?  (-> user-map :user :mfa_enabled)
+       :verified?     (-> user-map :user :verified)
+       :username      (-> user-map :user :username)
+       :avatar        (-> user-map :user :avatar)
+       :discriminator (-> user-map :user :discriminator)})))
 
 (defrecord Channel [id guild-id name type position topic]
   Snowflake
   (->snowflake [channel] (-> channel :id Long/parseLong)))
 
 (defonce channel-type-map
-  {0      :text
-   :text  :text
-   2      :voice
-   :voice :voice})
+         {0      :text
+          :text  :text
+          2      :voice
+          :voice :voice})
 
 (defn build-channel [channel-map]
   (map->Channel
-    {:guild-id  (:guild_id channel-map)
-     :name      (:name channel-map)
-     :topic     (:topic channel-map)
-     :position  (:position channel-map)
-     :id        (:id channel-map)
-     :type      (get channel-type-map (:type channel-map))}))
+    {:guild-id (:guild_id channel-map)
+     :name     (:name channel-map)
+     :topic    (:topic channel-map)
+     :position (:position channel-map)
+     :id       (:id channel-map)
+     :type     (get channel-type-map (:type channel-map))}))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -89,88 +89,88 @@
 (defrecord Route [endpoint method])
 
 (defonce endpoint-mapping
-  {;; Message operations
-   :get-message         (Route. "/channels/{channel}/messages/{message}" :get)
-   :send-message        (Route. "/channels/{channel}/messages" :post)
-   :edit-message        (Route. "/channels/{channel}/messages/{message}" :patch)
-   :delete-message      (Route. "/channels/{channel}/messages/{message}" :delete)
-   :delete-messages     (Route. "/channels/{channel}/messages/bulk-delete" :post)
-   :pin-message         (Route. "/channels/{channel}/pins/{message}" :put)
-   :unpin-message       (Route. "/channels/{channel}/pins/{message}" :delete)
-   :pins-from           (Route. "/channels/{channel}/pins/{message}" :get)
-   :logs-from           (Route. "/channels/{channel}/messages" :get)
+         {;; Message operations
+          :get-message        (Route. "/channels/{channel}/messages/{message}" :get)
+          :send-message       (Route. "/channels/{channel}/messages" :post)
+          :edit-message       (Route. "/channels/{channel}/messages/{message}" :patch)
+          :delete-message     (Route. "/channels/{channel}/messages/{message}" :delete)
+          :delete-messages    (Route. "/channels/{channel}/messages/bulk-delete" :post)
+          :pin-message        (Route. "/channels/{channel}/pins/{message}" :put)
+          :unpin-message      (Route. "/channels/{channel}/pins/{message}" :delete)
+          :pins-from          (Route. "/channels/{channel}/pins/{message}" :get)
+          :logs-from          (Route. "/channels/{channel}/messages" :get)
 
-   ;; Reactions
-   :add-reaction        (Route. "/channels/{channel}/messages/{message}/reactions/{emoji}/@me" :put)
-   :remove-reaction     (Route. "/channels/{channel}/messages/{message}/reactions/{emoji}/{user}" :delete)
-   :reaction-users      (Route. "/channels/{channel}/messages/{message}/reactions/{emoji}" :get)
-   :clear-reactions     (Route. "/channels/{channel}/messages/{message}/reactions" :delete)
+          ;; Reactions
+          :add-reaction       (Route. "/channels/{channel}/messages/{message}/reactions/{emoji}/@me" :put)
+          :remove-reaction    (Route. "/channels/{channel}/messages/{message}/reactions/{emoji}/{user}" :delete)
+          :reaction-users     (Route. "/channels/{channel}/messages/{message}/reactions/{emoji}" :get)
+          :clear-reactions    (Route. "/channels/{channel}/messages/{message}/reactions" :delete)
 
-   ;; Server member management
-   :kick                (Route. "/guilds/{guild}/members/{user}" :delete)
-   :ban                 (Route. "/guilds/{guild}/bans/%s" :put)
-   :unban               (Route. "/guilds/{guild}/bans/%s" :delete)
-   :get-member          (Route. "/guilds/{guild}/members/{user}" :get)
-   :edit-member         (Route. "/guilds/{guild}/members/{user}" :patch)
+          ;; Server member management
+          :kick               (Route. "/guilds/{guild}/members/{user}" :delete)
+          :ban                (Route. "/guilds/{guild}/bans/%s" :put)
+          :unban              (Route. "/guilds/{guild}/bans/%s" :delete)
+          :get-member         (Route. "/guilds/{guild}/members/{user}" :get)
+          :edit-member        (Route. "/guilds/{guild}/members/{user}" :patch)
 
-   ;; Current user management
-   :get-current-user    (Route. "/users/@me" :get)
-   :edit-profile        (Route. "/users/@me" :patch)
-   :update-nickname     (Route. "/guilds/{guild}/members/@me/nick" :patch)
+          ;; Current user management
+          :get-current-user   (Route. "/users/@me" :get)
+          :edit-profile       (Route. "/users/@me" :patch)
+          :update-nickname    (Route. "/guilds/{guild}/members/@me/nick" :patch)
 
-   ;; Server/Guild Management
-   :get-guild           (Route. "/guilds/{guild}" :get)
-   :get-servers         (Route. "/users/@me/guilds" :get)
-   :leave-server        (Route. "/users/@me/guilds/{guild}" :delete)
-   :delete-server       (Route. "/guilds/{guild}" :delete)
-   :create-server       (Route. "/guilds" :post)
-   :modify-server       (Route. "/guilds/{guild}" :patch)
-   :get-guild-member    (Route. "/guilds/{guild}/members/{user}" :get)
-   :list-members        (Route. "/guilds/{guild}/members" :get)
-   :prune-members       (Route. "/guilds/{guild}/prune" :post)
-   :prunable-members    (Route. "/guilds/{guild}/prune" :get)
+          ;; Server/Guild Management
+          :get-guild          (Route. "/guilds/{guild}" :get)
+          :get-servers        (Route. "/users/@me/guilds" :get)
+          :leave-server       (Route. "/users/@me/guilds/{guild}" :delete)
+          :delete-server      (Route. "/guilds/{guild}" :delete)
+          :create-server      (Route. "/guilds" :post)
+          :modify-server      (Route. "/guilds/{guild}" :patch)
+          :get-guild-member   (Route. "/guilds/{guild}/members/{user}" :get)
+          :list-members       (Route. "/guilds/{guild}/members" :get)
+          :prune-members      (Route. "/guilds/{guild}/prune" :post)
+          :prunable-members   (Route. "/guilds/{guild}/prune" :get)
 
-   ;; Channel management
-   :get-channel         (Route. "/channels/{channel}" :get)
-   :get-guild-channels  (Route. "/guilds/{guild}/channels" :get)
-   :create-channel      (Route. "/guilds/{guild}/channels" :post)
-   :create-dm-channel   (Route. "/users/@me/channels" :post)
-   :edit-channel        (Route. "/channels/{channel}" :patch)
-   :delete-channel      (Route. "/channels/{channel}" :delete)
+          ;; Channel management
+          :get-channel        (Route. "/channels/{channel}" :get)
+          :get-guild-channels (Route. "/guilds/{guild}/channels" :get)
+          :create-channel     (Route. "/guilds/{guild}/channels" :post)
+          :create-dm-channel  (Route. "/users/@me/channels" :post)
+          :edit-channel       (Route. "/channels/{channel}" :patch)
+          :delete-channel     (Route. "/channels/{channel}" :delete)
 
-   ;; Emojis
-   :create-emoji        (Route. "/guilds/{guild}/emojis" :post)
-   :delete-emoji        (Route. "/guilds/{guild}/emojis/{emoji}" :delete)
-   :edit-emoji          (Route. "/guilds/{guild}/emojis/{emoji}" :patch)
+          ;; Emojis
+          :create-emoji       (Route. "/guilds/{guild}/emojis" :post)
+          :delete-emoji       (Route. "/guilds/{guild}/emojis/{emoji}" :delete)
+          :edit-emoji         (Route. "/guilds/{guild}/emojis/{emoji}" :patch)
 
-   ;; Invites
-   :create-invite       (Route. "/channels/{channel}/invites" :post)
-   :get-invite          (Route. "/invite/{invite}" :get)
-   :guild-invites       (Route. "/guilds/{guild}/invites" :get)
-   :channel-invites     (Route. "/channels/{channel}/invites" :get)
-   :accept-invite       (Route. "/invite/{invite}" :post)
-   :delete-invite       (Route. "/invite/{invite}" :delete)
+          ;; Invites
+          :create-invite      (Route. "/channels/{channel}/invites" :post)
+          :get-invite         (Route. "/invite/{invite}" :get)
+          :guild-invites      (Route. "/guilds/{guild}/invites" :get)
+          :channel-invites    (Route. "/channels/{channel}/invites" :get)
+          :accept-invite      (Route. "/invite/{invite}" :post)
+          :delete-invite      (Route. "/invite/{invite}" :delete)
 
-   ;; Roles
-   :get-roles           (Route. "/guilds/{guild}/roles" :get)
-   :edit-role           (Route. "/guilds/{guild}/roles/{role}" :patch)
-   :delete-role         (Route. "/guilds/{guild}/roles/{role}" :delete)
-   :create-role         (Route. "/guilds/{guild}/roles" :post)
-   :add-user-role       (Route. "/guilds/{guild}/members/{user}/roles/{role}" :put)
-   :remove-user-role    (Route. "/guilds/{guild}/members/{user}/roles/{role}" :delete)
-   :edit-permissions    (Route. "/channels/{channel}/permissions/{overwrite}" :put)
-   :delete-permissions  (Route. "/channels/{channel}/permissions/{overwrite}" :delete)
+          ;; Roles
+          :get-roles          (Route. "/guilds/{guild}/roles" :get)
+          :edit-role          (Route. "/guilds/{guild}/roles/{role}" :patch)
+          :delete-role        (Route. "/guilds/{guild}/roles/{role}" :delete)
+          :create-role        (Route. "/guilds/{guild}/roles" :post)
+          :add-user-role      (Route. "/guilds/{guild}/members/{user}/roles/{role}" :put)
+          :remove-user-role   (Route. "/guilds/{guild}/members/{user}/roles/{role}" :delete)
+          :edit-permissions   (Route. "/channels/{channel}/permissions/{overwrite}" :put)
+          :delete-permissions (Route. "/channels/{channel}/permissions/{overwrite}" :delete)
 
-   ;; Miscellaneous
-   :send-typing         (Route. "/channels/{channel}/typing" :post)
-   :get-gateway         (Route. "/gateway" :get)
-   :get-bot-gateway     (Route. "/gateway/bot" :get)
-   :application-info    (Route. "/oauth2/applications/@me" :get)})
+          ;; Miscellaneous
+          :send-typing        (Route. "/channels/{channel}/typing" :post)
+          :get-gateway        (Route. "/gateway" :get)
+          :get-bot-gateway    (Route. "/gateway/bot" :get)
+          :application-info   (Route. "/oauth2/applications/@me" :get)})
 
 (defn get-endpoint [endpoint-key endpoint-args]
   (if-let [{:keys [endpoint method]} (get endpoint-mapping endpoint-key)]
     {:endpoint (utils/map-format endpoint endpoint-args)
-     :method method}
+     :method   method}
     (throw (ex-info "Invalid endpoint supplied" {:endpoint endpoint-key}))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -181,35 +181,35 @@
 (defn- build-request
   "Builds the API request based on the selected endpoint on the supplied arguments."
   [endpoint method auth json params]
-  (let  [url      (str discord-url endpoint)
-         headers  {:User-Agent    user-agent
-                   :Authorization (format "%s %s" (types/token-type auth) (types/token auth))
-                   :Accept        "application/json"}
-         request  {:headers headers
-                   :url     url
-                   :method  method}]
+  (let [url (str discord-url endpoint)
+        headers {:User-Agent    user-agent
+                 :Authorization (format "%s %s" (types/token-type auth) (types/token auth))
+                 :Accept        "application/json"}
+        request {:headers headers
+                 :url     url
+                 :method  method}]
     ;; Based on the HTTP method of the request being performed, we'll be attaching either a JSON
     ;; body or URL query parameters to the request.
     (condp = method
-      :get      (assoc request :params params)
-      :post     (assoc request :body (json/write-str json) :content-type :json)
-      :put      (assoc request :body (json/write-str json) :content-type :json)
-      :patch    (assoc request :body (json/write-str json) :content-type :json)
-      :delete   (assoc request :body (json/write-str json) :content-type :json)
+      :get (assoc request :params params)
+      :post (assoc request :body (json/write-str json) :content-type :json)
+      :put (assoc request :body (json/write-str json) :content-type :json)
+      :patch (assoc request :body (json/write-str json) :content-type :json)
+      :delete (assoc request :body (json/write-str json) :content-type :json)
       (throw (ex-info "Unknown request method" {:endpoint endpoint :method method})))))
 
 (defn- send-api-request
   "Sends a request to the Discord API and handles the response."
   [request constructor]
-  (let  [response   (client/request request)
-         status     (:status response)]
+  (let [response (client/request request)
+        status (:status response)]
     (case status
       200 (as-> response response
-            (:body response)
-            (json/read-str response :key-fn keyword)
-            (if (seq? response)
-              (map constructor response)
-              (constructor response)))
+                (:body response)
+                (json/read-str response :key-fn keyword)
+                (if (seq? response)
+                  (map constructor response)
+                  (constructor response)))
       204 true
 
       ;; Default
@@ -235,14 +235,14 @@
    :constructor f - A function which is mapped over API responses to create appropriate Records."
   [endpoint-key auth & {:keys [json params args constructor] :or {constructor identity} :as opts}]
   (let [{:keys [endpoint method]} (get-endpoint endpoint-key opts)
-        request                   (build-request endpoint method auth json params)]
+        request (build-request endpoint method auth json params)]
     (try+
       (send-api-request request constructor)
 
       ;; Handle an API rate limit (return code 429)
       (catch [:status 429] {:keys [body]}
         (let [rate-limit-info (json/read-str body)
-              wait-time       (get rate-limit-info "retry_after")]
+              wait-time (get rate-limit-info "retry_after")]
           (timbre/info (format "Rate limited by API, waiting for %d milliseconds." wait-time))
           (at/after wait-time #(send-api-request request constructor) rate-limit-pool)))
 
@@ -259,8 +259,8 @@
 ;;; Managing messages
 (defn send-message [auth channel content & {:keys [tts embed]}]
   (let [embed-map (embeds/embed->map embed)
-        payload   {:content content :tts (boolean tts) :embed embed-map}
-        payload   (if (empty? embed-map) payload (assoc payload :embed embed-map))]
+        payload {:content content :tts (boolean tts) :embed embed-map}
+        payload (if (empty? embed-map) payload (assoc payload :embed embed-map))]
     (discord-request :send-message auth :channel channel :json payload)))
 
 (defn delete-message [auth channel message]
@@ -277,7 +277,7 @@
   (discord-request :get-message auth :channel channel :message message))
 
 (defn logs-from [auth channel limit & {:keys [before after around] :as params}]
-  (let  [request-params (assoc params :limit limit)]
+  (let [request-params (assoc params :limit limit)]
     (discord-request :logs-from auth :channel channel :params request-params)))
 
 (defn pin-message [auth channel message]

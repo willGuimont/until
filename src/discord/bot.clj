@@ -46,10 +46,10 @@
    moderation, alias creation, etc."
   [handler-name [prefix-param client-param message-param] & body]
   (let [handler-fn-name (gensym (name handler-name))]
-   `(do
-      (timbre/infof "Register custom message handler: %s" ~(name handler-name))
-      (defn ~handler-fn-name [~prefix-param ~client-param ~message-param] ~@body)
-      (add-handler! ~handler-fn-name))))
+    `(do
+       (timbre/infof "Register custom message handler: %s" ~(name handler-name))
+       (defn ~handler-fn-name [~prefix-param ~client-param ~message-param] ~@body)
+       (add-handler! ~handler-fn-name))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Defining the global extension registry
@@ -62,16 +62,16 @@
    extension registry."
   ;; extension without options
   ([extension-name extension-function]
-   (let [extension-map {:command  extension-name
-                        :handler  extension-function
-                        :options  nil}]
+   (let [extension-map {:command extension-name
+                        :handler extension-function
+                        :options nil}]
      (swap! extension-registry conj extension-map)))
 
   ;; extension with options
   ([extension-name extension-function extension-options]
-   (let [extension-map {:command  extension-name
-                        :handler  extension-function
-                        :options  extension-options}]
+   (let [extension-map {:command extension-name
+                        :handler extension-function
+                        :options extension-options}]
      (swap! extension-registry conj extension-map))))
 
 (defn register-extension-docs!
@@ -81,7 +81,7 @@
   (if (seq documentation)
     (swap! extension-docs assoc extension-name documentation)))
 
-(defn get-extensions []  (map map->Extension @extension-registry))
+(defn get-extensions [] (map map->Extension @extension-registry))
 
 (defn clear-extensions! []
   (reset! extension-registry (list))
@@ -137,9 +137,9 @@
   ;; to the handlers of any extensions whose "command" is present immediately after the prefix
   (fn [client message]
     ;; First we'll partially apply our helper functions based on the incoming client and message.
-    (binding [say     (partial say* (:send-channel client) (:channel message))
-              delete  (partial http/delete-message client (:channel message))
-              pm      (partial pm* client (:send-channel client) (get-in message [:author :id]))]
+    (binding [say (partial say* (:send-channel client) (:channel message))
+              delete (partial http/delete-message client (:channel message))
+              pm (partial pm* client (:send-channel client) (get-in message [:author :id]))]
 
       ;; If the message starts with the bot prefix, we'll dispatch to any extension extensions that
       ;; have been installed
@@ -165,8 +165,8 @@
    (create-bot bot-name prefix (types/configuration-auth)))
 
   ([bot-name prefix auth]
-   (let [handler          (build-handler-fn prefix)
-         discord-client   (client/create-discord-client auth handler)]
+   (let [handler (build-handler-fn prefix)
+         discord-client (client/create-discord-client auth handler)]
      (timbre/infof "Creating bot with prefix: %s" prefix)
      (DiscordBot. bot-name prefix discord-client))))
 
@@ -187,24 +187,24 @@
    particular subcommand. We also want to add the documentation for that subcommand to the
    documentation for the overall command."
   [extension-name client-param message-param dispatch-val & body]
-  (let [body          body
+  (let [body body
         ;; Check for documentation at the top of the subcommand
-        command-doc   (if (string? (first body))
-                        (format "\t%s: %s\n" (name dispatch-val) (first body))
-                        (format "\t%s\n" (name dispatch-val)))
-        body          (if (string? (first body))
-                        (rest body)
-                        body)
+        command-doc (if (string? (first body))
+                      (format "\t%s: %s\n" (name dispatch-val) (first body))
+                      (format "\t%s\n" (name dispatch-val)))
+        body (if (string? (first body))
+               (rest body)
+               body)
         ;; Check for options at the top of the subcommand
-        options       (if (map? (first body))
-                        (first body)
-                        {})
-        body          (if (map? (first body))
-                        (rest body)
-                        body)
+        options (if (map? (first body))
+                  (first body)
+                  {})
+        body (if (map? (first body))
+               (rest body)
+               body)
 
         ;; Extract the permissions option
-        permissions   (get options :requires)]
+        permissions (get options :requires)]
     `(do
        ;; Add documentation for this command to the multimethod documentation
        (alter-meta!
@@ -259,21 +259,21 @@
              (throw (ex-info "Extension definition arg vector needs 2 args (client & message)."
                              {:len (count arg-vector) :curr arg-vector})))]}
   ;; Parse out some of the possible optional arguments
-  (let [docstring?  (if (string? (first impls))
-                      (first impls)
-                      "")
-        m           (if (string? (first impls))
-                      {:doc (first impls)}
-                      {})
-        impls       (if (string? (first impls))
-                      (rest impls)
-                      impls)
-        options     (if (map? (first impls))
-                      (first impls)
-                      {})
-        impls       (if (map? (first impls))
-                      (rest impls)
-                      impls)
+  (let [docstring? (if (string? (first impls))
+                     (first impls)
+                     "")
+        m (if (string? (first impls))
+            {:doc (first impls)}
+            {})
+        impls (if (string? (first impls))
+                (rest impls)
+                impls)
+        options (if (map? (first impls))
+                  (first impls)
+                  {})
+        impls (if (map? (first impls))
+                (rest impls)
+                impls)
 
         ;; The last thing that we want to do is gensym on the extension name. This will prevent the
         ;; defined extensions from overshadowing existing functions and causing problems down the
@@ -282,8 +282,8 @@
     `(do
        ;; Define the multimethod
        (defmulti ~(with-meta extension-fn-name m)
-         (fn [client# message#]
-           (-> message# :content utils/words first keyword)))
+                 (fn [client# message#]
+                   (-> message# :content utils/words first keyword)))
 
        ;; Register the extension with the global extension hierarchy
        (register-extension! ~(keyword extension-name) ~extension-fn-name ~options)
@@ -293,7 +293,7 @@
 
        ;; Add the docstring and the arglist to this command
        (alter-meta! (var ~extension-fn-name) assoc
-                    :doc      (str ~docstring? "\n\nAvailable Subcommands:\n")
+                    :doc (str ~docstring? "\n\nAvailable Subcommands:\n")
                     :arglists (quote ([~client-param ~message-param])))
 
        ;; Build the method implementations
@@ -326,18 +326,18 @@
   {:arglists '([command [client-param message-param] docstring? options? & command-body])}
   [command [client-param message-param :as arg-vector] & command-body]
   ;; Try and parse out some of the options that can be supplied to the command
-  (let [m               (if (string? (first command-body))
-                          {:doc (first command-body)}
-                          {})
-        command-body    (if (string? (first command-body))
-                          (rest command-body)
-                          command-body)
-        options         (if (map? (first command-body))
-                          (first command-body)
-                          {})
-        command-body    (if (map? (first command-body))
-                          (rest command-body)
-                          command-body)
+  (let [m (if (string? (first command-body))
+            {:doc (first command-body)}
+            {})
+        command-body (if (string? (first command-body))
+                       (rest command-body)
+                       command-body)
+        options (if (map? (first command-body))
+                  (first command-body)
+                  {})
+        command-body (if (map? (first command-body))
+                       (rest command-body)
+                       command-body)
         command-fn-name (gensym command)]
     `(do
        (defn ~(with-meta command-fn-name m) [~client-param ~message-param] ~@command-body)
@@ -396,8 +396,8 @@
 ;;; the configured extension folders
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn- generate-doc-embed []
-  (loop [docs   @extension-docs
-         embed  (embeds/create-embed :title "Available commands:")]
+  (loop [docs @extension-docs
+         embed (embeds/create-embed :title "Available commands:")]
     (if-let [[command doc] (first docs)]
       (recur (rest docs)
              (embeds/+field embed command doc))
@@ -408,10 +408,10 @@
     (pm doc-embed)))
 
 (defcommand help
-  [_ _]
-  "Look at help information for the available extensions."
-  (let [doc-embed (generate-doc-embed)]
-    (pm doc-embed)))
+            [_ _]
+            "Look at help information for the available extensions."
+            (let [doc-embed (generate-doc-embed)]
+              (pm doc-embed)))
 
 (declare register-builtins!)
 
@@ -428,8 +428,8 @@
     (say "You do not have permission to reload the bot!!")))
 
 (defonce builtin-commands
-   [["reload"  reload-command-handler]
-    ["help"    help-command-handler]])
+         [["reload" reload-command-handler]
+          ["help" help-command-handler]])
 
 (defn register-builtins! []
   (doseq [[command handler options] builtin-commands]

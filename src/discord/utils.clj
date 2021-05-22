@@ -10,7 +10,7 @@
   (s/split s #"\s+"))
 
 (defonce map-replace-pattern
-  #"\{(?<field>\w+)\}")
+         #"\{(?<field>\w+)\}")
 
 (defn map-format
   "Helper function to replace bracketed substrings in a string based on values in a map.

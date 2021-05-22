@@ -51,10 +51,10 @@
      (create-discord-client default-auth message-handler)))
 
   ([auth message-handler & {:keys [send-channel receive-channel] :as options}]
-   (let [send-chan  (or (:send-channel options) (async/chan))
-         recv-chan  (or (:receive-channel options) (async/chan))
-         gateway    (gw/connect-to-gateway auth recv-chan)
-         client     (GeneralDiscordClient. auth gateway message-handler send-chan recv-chan)]
+   (let [send-chan (or (:send-channel options) (async/chan))
+         recv-chan (or (:receive-channel options) (async/chan))
+         gateway (gw/connect-to-gateway auth recv-chan)
+         client (GeneralDiscordClient. auth gateway message-handler send-chan recv-chan)]
 
      ;; Send the identification message to Discord
      (gw/send-identify gateway)
