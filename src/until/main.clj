@@ -13,27 +13,22 @@
                                       parse-int)
                                   (catch Exception e 0)))
 
-(defmacro dopar [seq-expr & body]
-  (assert (= 2 (count seq-expr)) "single pair of forms in sequence expression")
-  (let [[k v] seq-expr]
-    `(apply await
-            (for [k# ~v]
-              (let [a# (agent k#)]
-                (send a# (fn [~k] ~@body))
-                a#)))))
+(defn kick-user [duration client guild-id user]
+  (bot/say (format "Will kick %s out of voicechat in %d minutes" (:username user) duration))
+  (Thread/sleep (* duration 60 1000))
+  (bot/say "Sleep is for the weak but I am very weak so I need sleep")
+  (bot/say (format "Kicking %s out of voicechat" (pr-str (:username user))))
+  (http/edit-member client guild-id (:id user) :channel_id nil))
 
 (bot/defcommand :talk-for
                 [client message]
                 (let [user-mentions (:user-mentions message)
                       guild-id (get-in message [:channel :guild-id])
-                      duration (get-duration message)]
+                      duration (get-duration message)
+                      kick-fn (partial kick-user duration client guild-id)]
                   (if (> duration 0)
-                    (dopar [user user-mentions]
-                           (bot/say (format "Will kick %s out of voicechat in %d minutes" (:username user) duration))
-                           (Thread/sleep (* duration 60 1000))
-                           (bot/say "Sleep is for the weak but I am very weak so I need sleep")
-                           (bot/say (format "Kicking %s out of voicechat" (pr-str (:username user))))
-                           (http/edit-member client guild-id (:id user) :channel_id nil))
+                    (doall
+                      (pmap kick-fn user-mentions))
                     (bot/say "Invalid command, expected: !talk-for <duration-in-minutes> @User1 @User2 ... @UserN"))))
 
 (defn -main
