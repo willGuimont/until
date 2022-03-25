@@ -6,11 +6,9 @@ A discord bot that kicks you out of voicechat after x minutes
 
 Create `data/settings/settings.json` containing:
 
-Create `data/token.txt` containing:
-
 ```json
 {
-  "token": "Your Auth Token",
+  "token": "<Your Auth Token>",
   "prefix": "!",
   "bot-name": "until",
   "extension-folders": [
