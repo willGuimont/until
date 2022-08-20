@@ -17,8 +17,21 @@ Create `data/settings/settings.json` containing:
 }
 ```
 
+## Run
+
+```shell
+lein run
+```
+
 ## Usage
 
 ```shell
 !talk-for <duration-in-minutes> @User1 @User2 ... @UserN
+```
+
+## Docker
+
+```shell
+docker build -t until .
+docker run -d --rm until
 ```

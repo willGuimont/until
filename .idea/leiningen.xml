@@ -7,9 +7,9 @@
         <option value="user" />
         <option value="provided" />
         <option value="dev" />
-        <option value="base" />
         <option value="leiningen/default" />
         <option value="default" />
+        <option value="base" />
       </list>
     </option>
   </component>
