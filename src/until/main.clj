@@ -14,6 +14,7 @@
                                   (catch Exception e 0)))
 
 (defn kick-user [duration client guild-id user]
+  (bot/say "It's tako time!")
   (bot/say (format "Will kick %s out of voicechat in %d minutes" (:username user) duration))
   (Thread/sleep (* duration 60 1000))
   (bot/say "Sleep is for the weak but I am very weak so I need sleep")
